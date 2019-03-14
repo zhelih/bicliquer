@@ -18,7 +18,7 @@
 
 /* Default cliquer options */
 static clique_options clique_default_options_struct = {
-	reorder_by_default, NULL, clique_print_time, NULL, NULL, NULL, NULL, 0
+  reorder_by_default, NULL, clique_print_time, NULL, NULL, NULL, NULL, 0
 };
 clique_options *clique_default_options=&clique_default_options_struct;
 
@@ -37,7 +37,7 @@ static struct tms cputimer;      /* Timer for opts->time_function() */
 static struct timeval realtimer; /* Timer for opts->time_function() */
 static int clique_list_count=0;  /* No. of cliques in opts->clique_list[] */
 static int weight_multiplier=1;  /* Weights multiplied by this when passing
-				  * to time_function(). */
+          * to time_function(). */
 static int current_i; /* first vertex in P */
 
 /* List cache (contains memory blocks of size g->n * sizeof(int)) */
@@ -86,14 +86,14 @@ static int clocks_per_sec=0;
 
 /* Recursion and helper functions */
 static boolean sub_unweighted_single(int *table, int size, int min_size,
-				     graph_t *g);
+             graph_t *g);
 static int sub_unweighted_all(int *table, int size, int min_size, int max_size,
-			      boolean maximal, graph_t *g,
-			      clique_options *opts);
+            boolean maximal, graph_t *g,
+            clique_options *opts);
 static int sub_weighted_all(int *table, int size, int weight,
-			    int current_weight, int prune_low, int prune_high,
-			    int min_weight, int max_weight, boolean maximal,
-			    graph_t *g, clique_options *opts);
+          int current_weight, int prune_low, int prune_high,
+          int min_weight, int max_weight, boolean maximal,
+          graph_t *g, clique_options *opts);
 
 
 static boolean store_clique(set_t clique, graph_t *g, clique_options *opts);
@@ -138,83 +138,83 @@ static boolean false_function(set_t clique,graph_t *g,clique_options *opts);
  * Note: Does NOT use opts->user_function of opts->clique_list.
  */
 static int unweighted_clique_search_single(int *table, int min_size,
-					   graph_t *g, clique_options *opts) {
-	struct tms tms;
-	struct timeval timeval;
-	int i,j;
-	int v,w;
-	int *newtable;
-	int newsize;
+             graph_t *g, clique_options *opts) {
+  struct tms tms;
+  struct timeval timeval;
+  int i,j;
+  int v,w;
+  int *newtable;
+  int newsize;
 
   printf("HERE!\n");
 
-	v=table[0];
-	clique_size[v]=1;
-	set_empty(current_clique);
-	SET_ADD_ELEMENT(current_clique,v);
-	if (min_size==1)
-		return 1;
+  v=table[0];
+  clique_size[v]=1;
+  set_empty(current_clique);
+  SET_ADD_ELEMENT(current_clique,v);
+  if (min_size==1)
+    return 1;
 
-	if (temp_count) {
-		temp_count--;
-		newtable=temp_list[temp_count];
-	} else {
-		newtable=malloc(g->n * sizeof(int));
-	}
-	for (i=1; i < g->n; i++) {
-		w=v;
-		v=table[i];
+  if (temp_count) {
+    temp_count--;
+    newtable=temp_list[temp_count];
+  } else {
+    newtable=malloc(g->n * sizeof(int));
+  }
+  for (i=1; i < g->n; i++) {
+    w=v;
+    v=table[i];
     current_i = v;
 
-		newsize=0;
-		for (j=0; j<i; j++) {
-		  newtable[newsize]=table[j];
-			newsize++;
-		}
+    newsize=0;
+    for (j=0; j<i; j++) {
+      newtable[newsize]=table[j];
+      newsize++;
+    }
 
-		if (sub_unweighted_single(newtable,newsize,clique_size[w],g)) {
-			SET_ADD_ELEMENT(current_clique,v);
-			clique_size[v]=clique_size[w]+1;
-		} else {
-			clique_size[v]=clique_size[w];
-		}
+    if (sub_unweighted_single(newtable,newsize,clique_size[w],g)) {
+      SET_ADD_ELEMENT(current_clique,v);
+      clique_size[v]=clique_size[w]+1;
+    } else {
+      clique_size[v]=clique_size[w];
+    }
 
-		if (opts && opts->time_function) {
-			gettimeofday(&timeval,NULL);
-			times(&tms);
-			if (!opts->time_function(entrance_level,
-						 i+1,g->n,clique_size[v] *
-						 weight_multiplier,
-						 (double)(tms.tms_utime-
-							  cputimer.tms_utime)/
-						 clocks_per_sec,
-						 timeval.tv_sec-
-						 realtimer.tv_sec+
-						 (double)(timeval.tv_usec-
-							  realtimer.tv_usec)/
-						 1000000,opts)) {
-				temp_list[temp_count++]=newtable;
-				return 0;
-			}
-		}
+    if (opts && opts->time_function) {
+      gettimeofday(&timeval,NULL);
+      times(&tms);
+      if (!opts->time_function(entrance_level,
+             i+1,g->n,clique_size[v] *
+             weight_multiplier,
+             (double)(tms.tms_utime-
+                cputimer.tms_utime)/
+             clocks_per_sec,
+             timeval.tv_sec-
+             realtimer.tv_sec+
+             (double)(timeval.tv_usec-
+                realtimer.tv_usec)/
+             1000000,opts)) {
+        temp_list[temp_count++]=newtable;
+        return 0;
+      }
+    }
 
-		if (min_size) {
-			if (clique_size[v]>=min_size) {
-				temp_list[temp_count++]=newtable;
-				return clique_size[v];
-			}
-			if (clique_size[v]+g->n-i-1 < min_size) {
-				temp_list[temp_count++]=newtable;
-				return 0;
-			}
-		}
-	}
+    if (min_size) {
+      if (clique_size[v]>=min_size) {
+        temp_list[temp_count++]=newtable;
+        return clique_size[v];
+      }
+      if (clique_size[v]+g->n-i-1 < min_size) {
+        temp_list[temp_count++]=newtable;
+        return 0;
+      }
+    }
+  }
 
-	temp_list[temp_count++]=newtable;
+  temp_list[temp_count++]=newtable;
 
-	if (min_size)
-		return 0;
-	return clique_size[v];
+  if (min_size)
+    return 0;
+  return clique_size[v];
 }
 
 /*
@@ -235,76 +235,76 @@ static int unweighted_clique_search_single(int *table, int min_size,
  * otherwise inaccurate results may occur.
  */
 static boolean sub_unweighted_single(int *table, int size, int min_size,
-				     graph_t *g) {
-	int i;
-	int v;
-	int *newtable;
-	int *p1, *p2;
+             graph_t *g) {
+  int i;
+  int v;
+  int *newtable;
+  int *p1, *p2;
 
-	/* Zero or one vertices needed anymore. */
-	if (min_size <= 1) {
-		if (size>0 && min_size==1) {
-			set_empty(current_clique);
-			SET_ADD_ELEMENT(current_clique,table[0]);
-			return TRUE;
-		}
-		if (min_size==0) {
-			set_empty(current_clique);
-			return TRUE;
-		}
-		return FALSE;
-	}
-	if (size < min_size)
-		return FALSE;
+  /* Zero or one vertices needed anymore. */
+  if (min_size <= 1) {
+    if (size>0 && min_size==1) {
+      set_empty(current_clique);
+      SET_ADD_ELEMENT(current_clique,table[0]);
+      return TRUE;
+    }
+    if (min_size==0) {
+      set_empty(current_clique);
+      return TRUE;
+    }
+    return FALSE;
+  }
+  if (size < min_size)
+    return FALSE;
 
-	/* Dynamic memory allocation with cache */
-	if (temp_count) {
-		temp_count--;
-		newtable=temp_list[temp_count];
-	} else {
-		newtable=malloc(g->n * sizeof(int));
-	}
+  /* Dynamic memory allocation with cache */
+  if (temp_count) {
+    temp_count--;
+    newtable=temp_list[temp_count];
+  } else {
+    newtable=malloc(g->n * sizeof(int));
+  }
 
-	for (i = size-1; i >= 0; i--) {
-		v = table[i];
+  for (i = size-1; i >= 0; i--) {
+    v = table[i];
 
-		if (clique_size[v] < min_size)
-			break;
-		/* This is faster when compiling with gcc than placing
-		 * this in the for-loop condition. */
-		if (i+1 < min_size)
-			break;
+    if (clique_size[v] < min_size)
+      break;
+    /* This is faster when compiling with gcc than placing
+     * this in the for-loop condition. */
+    if (i+1 < min_size)
+      break;
 
-		/* Very ugly code, but works faster than "for (i=...)" */
-		p1 = newtable;
-		for (p2=table; p2 < table+i; p2++) {
-			int w = *p2;
+    /* Very ugly code, but works faster than "for (i=...)" */
+    p1 = newtable;
+    for (p2=table; p2 < table+i; p2++) {
+      int w = *p2;
       if(v == w || v == current_i || w == current_i)
         exit(0);
-			if (!(GRAPH_IS_EDGE(g, v, w) ^ GRAPH_IS_EDGE(g, v, current_i) ^ GRAPH_IS_EDGE(g, w, current_i))) {
-				*p1 = w;
-				p1++;
-			}
-		}
+      if (!(GRAPH_IS_EDGE(g, v, w) ^ GRAPH_IS_EDGE(g, v, current_i) ^ GRAPH_IS_EDGE(g, w, current_i))) {
+        *p1 = w;
+        p1++;
+      }
+    }
 
-		/* Avoid unneccessary loops (next size == p1-newtable) */
-		if (p1-newtable < min_size-1)
-			continue;
-		/* Now p1-newtable >= min_size-1 >= 2-1 == 1, so we can use
-		 * p1-newtable-1 safely. */
-		if (clique_size[newtable[p1-newtable-1]] < min_size-1)
-			continue;
+    /* Avoid unneccessary loops (next size == p1-newtable) */
+    if (p1-newtable < min_size-1)
+      continue;
+    /* Now p1-newtable >= min_size-1 >= 2-1 == 1, so we can use
+     * p1-newtable-1 safely. */
+    if (clique_size[newtable[p1-newtable-1]] < min_size-1)
+      continue;
 
-		if (sub_unweighted_single(newtable,p1-newtable,
-					  min_size-1,g)) {
-			/* Clique found. */
-			SET_ADD_ELEMENT(current_clique,v);
-			temp_list[temp_count++]=newtable;
-			return TRUE;
-		}
-	}
-	temp_list[temp_count++]=newtable;
-	return FALSE;
+    if (sub_unweighted_single(newtable,p1-newtable,
+            min_size-1,g)) {
+      /* Clique found. */
+      SET_ADD_ELEMENT(current_clique,v);
+      temp_list[temp_count++]=newtable;
+      return TRUE;
+    }
+  }
+  temp_list[temp_count++]=newtable;
+  return FALSE;
 }
 
 
@@ -335,68 +335,68 @@ static boolean sub_unweighted_single(int *table, int size, int min_size,
  * in graph, if user/time_function aborts).
  */
 static int unweighted_clique_search_all(int *table, int start,
-					int min_size, int max_size,
-					boolean maximal, graph_t *g,
-					clique_options *opts) {
-	struct timeval timeval;
-	struct tms tms;
-	int i,j;
-	int v;
-	int *newtable;
-	int newsize;
-	int count=0;
+          int min_size, int max_size,
+          boolean maximal, graph_t *g,
+          clique_options *opts) {
+  struct timeval timeval;
+  struct tms tms;
+  int i,j;
+  int v;
+  int *newtable;
+  int newsize;
+  int count=0;
 
-	if (temp_count) {
-		temp_count--;
-		newtable=temp_list[temp_count];
-	} else {
-		newtable=malloc(g->n * sizeof(int));
-	}
+  if (temp_count) {
+    temp_count--;
+    newtable=temp_list[temp_count];
+  } else {
+    newtable=malloc(g->n * sizeof(int));
+  }
 
-	clique_list_count=0;
-	set_empty(current_clique);
-	for (i=start; i < g->n; i++) {
-		v=table[i];
-		clique_size[v]=min_size;  /* Do not prune here. */
+  clique_list_count=0;
+  set_empty(current_clique);
+  for (i=start; i < g->n; i++) {
+    v=table[i];
+    clique_size[v]=min_size;  /* Do not prune here. */
 
-		newsize=0;
-		for (j=0; j<i; j++) {
-			newtable[newsize]=table[j];
-			newsize++;
-		}
+    newsize=0;
+    for (j=0; j<i; j++) {
+      newtable[newsize]=table[j];
+      newsize++;
+    }
 
-		SET_ADD_ELEMENT(current_clique,v);
-		j=sub_unweighted_all(newtable,newsize,min_size-1,max_size-1,
-				     maximal,g,opts);
-		SET_DEL_ELEMENT(current_clique,v);
-		if (j<0) {
-			/* Abort. */
-			count-=j;
-			break;
-		}
-		count+=j;
+    SET_ADD_ELEMENT(current_clique,v);
+    j=sub_unweighted_all(newtable,newsize,min_size-1,max_size-1,
+             maximal,g,opts);
+    SET_DEL_ELEMENT(current_clique,v);
+    if (j<0) {
+      /* Abort. */
+      count-=j;
+      break;
+    }
+    count+=j;
 
-		if (opts->time_function) {
-			gettimeofday(&timeval,NULL);
-			times(&tms);
-			if (!opts->time_function(entrance_level,
-						 i+1,g->n,min_size *
-						 weight_multiplier,
-						 (double)(tms.tms_utime-
-							  cputimer.tms_utime)/
-						 clocks_per_sec,
-						 timeval.tv_sec-
-						 realtimer.tv_sec+
-						 (double)(timeval.tv_usec-
-							  realtimer.tv_usec)/
-						 1000000,opts)) {
-				/* Abort. */
-				break;
-			}
-		}
-	}
-	temp_list[temp_count++]=newtable;
-	return count;
+    if (opts->time_function) {
+      gettimeofday(&timeval,NULL);
+      times(&tms);
+      if (!opts->time_function(entrance_level,
+             i+1,g->n,min_size *
+             weight_multiplier,
+             (double)(tms.tms_utime-
+                cputimer.tms_utime)/
+             clocks_per_sec,
+             timeval.tv_sec-
+             realtimer.tv_sec+
+             (double)(timeval.tv_usec-
+                realtimer.tv_usec)/
+             1000000,opts)) {
+        /* Abort. */
+        break;
+      }
+    }
+  }
+  temp_list[temp_count++]=newtable;
+  return count;
 }
 
 /*
@@ -425,79 +425,79 @@ static int unweighted_clique_search_all(int *table, int start,
  * otherwise inaccurate results may occur.
  */
 static int sub_unweighted_all(int *table, int size, int min_size, int max_size,
-			      boolean maximal, graph_t *g,
-			      clique_options *opts) {
-	int i;
-	int v;
-	int n;
-	int *newtable;
-	int *p1, *p2;
-	int count=0;     /* Amount of cliques found */
+            boolean maximal, graph_t *g,
+            clique_options *opts) {
+  int i;
+  int v;
+  int n;
+  int *newtable;
+  int *p1, *p2;
+  int count=0;     /* Amount of cliques found */
 
-	if (min_size <= 0) {
-		if ((!maximal) || is_maximal(current_clique,g)) {
-			/* We've found one.  Store it. */
-			count++;
-			if (!store_clique(current_clique,g,opts)) {
-				return -count;
-			}
-		}
-		if (max_size <= 0) {
-			/* If we add another element, size will be too big. */
-			return count;
-		}
-	}
+  if (min_size <= 0) {
+    if ((!maximal) || is_maximal(current_clique,g)) {
+      /* We've found one.  Store it. */
+      count++;
+      if (!store_clique(current_clique,g,opts)) {
+        return -count;
+      }
+    }
+    if (max_size <= 0) {
+      /* If we add another element, size will be too big. */
+      return count;
+    }
+  }
 
-	if (size < min_size) {
-		return count;
-	}
+  if (size < min_size) {
+    return count;
+  }
 
-	/* Dynamic memory allocation with cache */
-	if (temp_count) {
-		temp_count--;
-		newtable=temp_list[temp_count];
-	} else {
-		newtable=malloc(g->n * sizeof(int));
-	}
+  /* Dynamic memory allocation with cache */
+  if (temp_count) {
+    temp_count--;
+    newtable=temp_list[temp_count];
+  } else {
+    newtable=malloc(g->n * sizeof(int));
+  }
 
-	for (i=size-1; i>=0; i--) {
-		v = table[i];
-		if (clique_size[v] < min_size) {
-			break;
-		}
-		if (i+1 < min_size) {
-			break;
-		}
+  for (i=size-1; i>=0; i--) {
+    v = table[i];
+    if (clique_size[v] < min_size) {
+      break;
+    }
+    if (i+1 < min_size) {
+      break;
+    }
 
-		/* Very ugly code, but works faster than "for (i=...)" */
-		p1 = newtable;
-		for (p2=table; p2 < table+i; p2++) {
-			int w = *p2;
-			if (GRAPH_IS_EDGE(g, v, w)) { // TODO
-				*p1 = w;
-				p1++;
-			}
-		}
+    /* Very ugly code, but works faster than "for (i=...)" */
+    p1 = newtable;
+    for (p2=table; p2 < table+i; p2++) {
+      int w = *p2;
+      if (GRAPH_IS_EDGE(g, v, w)) { // TODO
+        *p1 = w;
+        p1++;
+      }
+    }
 
-		/* Avoid unneccessary loops (next size == p1-newtable) */
-		if (p1-newtable < min_size-1) {
-			continue;
-		}
+    /* Avoid unneccessary loops (next size == p1-newtable) */
+    if (p1-newtable < min_size-1) {
+      continue;
+    }
 
-		SET_ADD_ELEMENT(current_clique,v);
-		n=sub_unweighted_all(newtable,p1-newtable,
-				     min_size-1,max_size-1,maximal,g,opts);
-		SET_DEL_ELEMENT(current_clique,v);
-		if (n < 0) {
-			/* Abort. */
-			count -= n;
-			count = -count;
-			break;
-		}
-		count+=n;
-	}
-	temp_list[temp_count++]=newtable;
-	return count;
+    SET_ADD_ELEMENT(current_clique,v);
+    n=sub_unweighted_all(newtable,p1-newtable,
+             min_size-1,max_size-1,maximal,g,opts);
+    SET_DEL_ELEMENT(current_clique,v);
+    if (n < 0) {
+      /* Abort. */
+      count -= n;
+      count = -count;
+      break;
+    }
+    count+=n;
+  }
+  temp_list[temp_count++]=newtable;
+  return count;
 }
 
 
@@ -538,121 +538,121 @@ static int sub_unweighted_all(int *table, int size, int min_size, int max_size,
  * Note: Does NOT use opts->user_function of opts->clique_list.
  */
 static int weighted_clique_search_single(int *table, int min_weight,
-					 int max_weight, graph_t *g,
-					 clique_options *opts) {
-	struct timeval timeval;
-	struct tms tms;
-	int i,j;
-	int v;
-	int *newtable;
-	int newsize;
-	int newweight;
-	int search_weight;
-	int min_w;
-	clique_options localopts;
+           int max_weight, graph_t *g,
+           clique_options *opts) {
+  struct timeval timeval;
+  struct tms tms;
+  int i,j;
+  int v;
+  int *newtable;
+  int newsize;
+  int newweight;
+  int search_weight;
+  int min_w;
+  clique_options localopts;
 
-	if (min_weight==0)
-		min_w=INT_MAX;
-	else
-		min_w=min_weight;
-
-
-	if (min_weight==1) {
-		/* min_weight==1 may cause trouble in the routine, and
-		 * it's trivial to check as it's own case.
-		 * We write nothing to clique_size[]. */
-		for (i=0; i < g->n; i++) {
-			if (g->weights[table[i]] <= max_weight) {
-				set_empty(best_clique);
-				SET_ADD_ELEMENT(best_clique,table[i]);
-				return g->weights[table[i]];
-			}
-		}
-		return 0;
-	}
-	
-	localopts.time_function=NULL;
-	localopts.reorder_function=NULL;
-	localopts.reorder_map=NULL;
-	localopts.user_function=false_function;
-	localopts.user_data=NULL;
-	localopts.clique_list=&best_clique;
-	localopts.clique_list_length=1;
-	clique_list_count=0;
-
-	v=table[0];
-	set_empty(best_clique);
-	SET_ADD_ELEMENT(best_clique,v);
-	search_weight=g->weights[v];
-	if (min_weight && (search_weight >= min_weight)) {
-		if (search_weight <= max_weight) {
-			/* Found suitable clique. */
-			return search_weight;
-		}
-		search_weight=min_weight-1;
-	}
-	clique_size[v]=search_weight;
-	set_empty(current_clique);
-
-	if (temp_count) {
-		temp_count--;
-		newtable=temp_list[temp_count];
-	} else {
-		newtable=malloc(g->n * sizeof(int));
-	}
-
-	for (i = 1; i < g->n; i++) {
-		v=table[i];
-
-		newsize=0;
-		newweight=0;
-		for (j=0; j<i; j++) {
-			newweight += g->weights[table[j]];
-			newtable[newsize]=table[j];
-			newsize++;
-		}
+  if (min_weight==0)
+    min_w=INT_MAX;
+  else
+    min_w=min_weight;
 
 
-		SET_ADD_ELEMENT(current_clique,v);
-		search_weight=sub_weighted_all(newtable,newsize,newweight,
-					       g->weights[v],search_weight,
-					       clique_size[table[i-1]] +
-					       g->weights[v],
-					       min_w,max_weight,FALSE,
-					       g,&localopts);
-		SET_DEL_ELEMENT(current_clique,v);
-		if (search_weight < 0) {
-			break;
-		}
+  if (min_weight==1) {
+    /* min_weight==1 may cause trouble in the routine, and
+     * it's trivial to check as it's own case.
+     * We write nothing to clique_size[]. */
+    for (i=0; i < g->n; i++) {
+      if (g->weights[table[i]] <= max_weight) {
+        set_empty(best_clique);
+        SET_ADD_ELEMENT(best_clique,table[i]);
+        return g->weights[table[i]];
+      }
+    }
+    return 0;
+  }
+  
+  localopts.time_function=NULL;
+  localopts.reorder_function=NULL;
+  localopts.reorder_map=NULL;
+  localopts.user_function=false_function;
+  localopts.user_data=NULL;
+  localopts.clique_list=&best_clique;
+  localopts.clique_list_length=1;
+  clique_list_count=0;
 
-		clique_size[v]=search_weight;
+  v=table[0];
+  set_empty(best_clique);
+  SET_ADD_ELEMENT(best_clique,v);
+  search_weight=g->weights[v];
+  if (min_weight && (search_weight >= min_weight)) {
+    if (search_weight <= max_weight) {
+      /* Found suitable clique. */
+      return search_weight;
+    }
+    search_weight=min_weight-1;
+  }
+  clique_size[v]=search_weight;
+  set_empty(current_clique);
 
-		if (opts->time_function) {
-			gettimeofday(&timeval,NULL);
-			times(&tms);
-			if (!opts->time_function(entrance_level,
-						 i+1,g->n,clique_size[v] *
-						 weight_multiplier,
-						 (double)(tms.tms_utime-
-							  cputimer.tms_utime)/
-						 clocks_per_sec,
-						 timeval.tv_sec-
-						 realtimer.tv_sec+
-						 (double)(timeval.tv_usec-
-							  realtimer.tv_usec)/
-						 1000000,opts)) {
-				set_free(current_clique);
-				current_clique=NULL;
-				break;
-			}
-		}
-	}
-	temp_list[temp_count++]=newtable;
-	if (min_weight && (search_weight > 0)) {
-		/* Requested clique has not been found. */
-		return 0;
-	}
-	return clique_size[table[i-1]];
+  if (temp_count) {
+    temp_count--;
+    newtable=temp_list[temp_count];
+  } else {
+    newtable=malloc(g->n * sizeof(int));
+  }
+
+  for (i = 1; i < g->n; i++) {
+    v=table[i];
+
+    newsize=0;
+    newweight=0;
+    for (j=0; j<i; j++) {
+      newweight += g->weights[table[j]];
+      newtable[newsize]=table[j];
+      newsize++;
+    }
+
+
+    SET_ADD_ELEMENT(current_clique,v);
+    search_weight=sub_weighted_all(newtable,newsize,newweight,
+                 g->weights[v],search_weight,
+                 clique_size[table[i-1]] +
+                 g->weights[v],
+                 min_w,max_weight,FALSE,
+                 g,&localopts);
+    SET_DEL_ELEMENT(current_clique,v);
+    if (search_weight < 0) {
+      break;
+    }
+
+    clique_size[v]=search_weight;
+
+    if (opts->time_function) {
+      gettimeofday(&timeval,NULL);
+      times(&tms);
+      if (!opts->time_function(entrance_level,
+             i+1,g->n,clique_size[v] *
+             weight_multiplier,
+             (double)(tms.tms_utime-
+                cputimer.tms_utime)/
+             clocks_per_sec,
+             timeval.tv_sec-
+             realtimer.tv_sec+
+             (double)(timeval.tv_usec-
+                realtimer.tv_usec)/
+             1000000,opts)) {
+        set_free(current_clique);
+        current_clique=NULL;
+        break;
+      }
+    }
+  }
+  temp_list[temp_count++]=newtable;
+  if (min_weight && (search_weight > 0)) {
+    /* Requested clique has not been found. */
+    return 0;
+  }
+  return clique_size[table[i-1]];
 }
 
 
@@ -683,72 +683,72 @@ static int weighted_clique_search_single(int *table, int min_weight,
  * in graph, if user/time_function aborts).
  */
 static int weighted_clique_search_all(int *table, int start,
-				      int min_weight, int max_weight,
-				      boolean maximal, graph_t *g,
-				      clique_options *opts) {
-	struct timeval timeval;
-	struct tms tms;
-	int i,j;
-	int v;
-	int *newtable;
-	int newsize;
-	int newweight;
+              int min_weight, int max_weight,
+              boolean maximal, graph_t *g,
+              clique_options *opts) {
+  struct timeval timeval;
+  struct tms tms;
+  int i,j;
+  int v;
+  int *newtable;
+  int newsize;
+  int newweight;
 
-	if (temp_count) {
-		temp_count--;
-		newtable=temp_list[temp_count];
-	} else {
-		newtable=malloc(g->n * sizeof(int));
-	}
+  if (temp_count) {
+    temp_count--;
+    newtable=temp_list[temp_count];
+  } else {
+    newtable=malloc(g->n * sizeof(int));
+  }
 
-	clique_list_count=0;
-	set_empty(current_clique);
-	for (i=start; i < g->n; i++) {
-		v=table[i];
-		clique_size[v]=min_weight;   /* Do not prune here. */
+  clique_list_count=0;
+  set_empty(current_clique);
+  for (i=start; i < g->n; i++) {
+    v=table[i];
+    clique_size[v]=min_weight;   /* Do not prune here. */
 
-		newsize=0;
-		newweight=0;
-		for (j=0; j<i; j++) {
-			newtable[newsize]=table[j];
-			newweight+=g->weights[table[j]];
-			newsize++;
-		}
+    newsize=0;
+    newweight=0;
+    for (j=0; j<i; j++) {
+      newtable[newsize]=table[j];
+      newweight+=g->weights[table[j]];
+      newsize++;
+    }
 
-		SET_ADD_ELEMENT(current_clique,v);
-		j=sub_weighted_all(newtable,newsize,newweight,
-				   g->weights[v],min_weight-1,INT_MAX,
-				   min_weight,max_weight,maximal,g,opts);
-		SET_DEL_ELEMENT(current_clique,v);
+    SET_ADD_ELEMENT(current_clique,v);
+    j=sub_weighted_all(newtable,newsize,newweight,
+           g->weights[v],min_weight-1,INT_MAX,
+           min_weight,max_weight,maximal,g,opts);
+    SET_DEL_ELEMENT(current_clique,v);
 
-		if (j<0) {
-			/* Abort. */
-			break;
-		}
+    if (j<0) {
+      /* Abort. */
+      break;
+    }
 
-		if (opts->time_function) {
-			gettimeofday(&timeval,NULL);
-			times(&tms);
-			if (!opts->time_function(entrance_level,
-						 i+1,g->n,clique_size[v] *
-						 weight_multiplier,
-						 (double)(tms.tms_utime-
-							  cputimer.tms_utime)/
-						 clocks_per_sec,
-						 timeval.tv_sec-
-						 realtimer.tv_sec+
-						 (double)(timeval.tv_usec-
-							  realtimer.tv_usec)/
-						 1000000,opts)) {
-				set_free(current_clique);
-				current_clique=NULL;
-				break;
-			}
-		}
-	}
-	temp_list[temp_count++]=newtable;
+    if (opts->time_function) {
+      gettimeofday(&timeval,NULL);
+      times(&tms);
+      if (!opts->time_function(entrance_level,
+             i+1,g->n,clique_size[v] *
+             weight_multiplier,
+             (double)(tms.tms_utime-
+                cputimer.tms_utime)/
+             clocks_per_sec,
+             timeval.tv_sec-
+             realtimer.tv_sec+
+             (double)(timeval.tv_usec-
+                realtimer.tv_usec)/
+             1000000,opts)) {
+        set_free(current_clique);
+        current_clique=NULL;
+        break;
+      }
+    }
+  }
+  temp_list[temp_count++]=newtable;
 
-	return clique_list_count;
+  return clique_list_count;
 }
 
 /*
@@ -792,96 +792,96 @@ static int weighted_clique_search_all(int *table, int start,
  * desired.
  */
 static int sub_weighted_all(int *table, int size, int weight,
-			    int current_weight, int prune_low, int prune_high,
-			    int min_weight, int max_weight, boolean maximal,
-			    graph_t *g, clique_options *opts) {
-	int i;
-	int v,w;
-	int *newtable;
-	int *p1, *p2;
-	int newweight;
+          int current_weight, int prune_low, int prune_high,
+          int min_weight, int max_weight, boolean maximal,
+          graph_t *g, clique_options *opts) {
+  int i;
+  int v,w;
+  int *newtable;
+  int *p1, *p2;
+  int newweight;
 
-	if (current_weight >= min_weight) {
-		if ((current_weight <= max_weight) &&
-		    ((!maximal) || is_maximal(current_clique,g))) {
-			/* We've found one.  Store it. */
-			if (!store_clique(current_clique,g,opts)) {
-				return -1;
-			}
-		}
-		if (current_weight >= max_weight) {
-			/* Clique too heavy. */
-			return min_weight-1;
-		} 
-	}
-	if (size <= 0) {
-		/* current_weight < min_weight, prune_low < min_weight,
-		 * so return value is always < min_weight. */
-		if (current_weight>prune_low) {
-			if (best_clique)
-				set_copy(best_clique,current_clique);
-			if (current_weight < min_weight)
-				return current_weight;
-			else
-				return min_weight-1;
-		} else {
-			return prune_low;
-		}
-	}
+  if (current_weight >= min_weight) {
+    if ((current_weight <= max_weight) &&
+        ((!maximal) || is_maximal(current_clique,g))) {
+      /* We've found one.  Store it. */
+      if (!store_clique(current_clique,g,opts)) {
+        return -1;
+      }
+    }
+    if (current_weight >= max_weight) {
+      /* Clique too heavy. */
+      return min_weight-1;
+    } 
+  }
+  if (size <= 0) {
+    /* current_weight < min_weight, prune_low < min_weight,
+     * so return value is always < min_weight. */
+    if (current_weight>prune_low) {
+      if (best_clique)
+        set_copy(best_clique,current_clique);
+      if (current_weight < min_weight)
+        return current_weight;
+      else
+        return min_weight-1;
+    } else {
+      return prune_low;
+    }
+  }
 
-	/* Dynamic memory allocation with cache */
-	if (temp_count) {
-		temp_count--;
-		newtable=temp_list[temp_count];
-	} else {
-		newtable=malloc(g->n * sizeof(int));
-	}
+  /* Dynamic memory allocation with cache */
+  if (temp_count) {
+    temp_count--;
+    newtable=temp_list[temp_count];
+  } else {
+    newtable=malloc(g->n * sizeof(int));
+  }
 
-	for (i = size-1; i >= 0; i--) {
-		v = table[i];
-		if (current_weight+clique_size[v] <= prune_low) {
-			/* Dealing with subset without heavy enough clique. */
-			break;
-		}
-		if (current_weight+weight <= prune_low) {
-			/* Even if all elements are added, won't do. */
-			break;
-		}
+  for (i = size-1; i >= 0; i--) {
+    v = table[i];
+    if (current_weight+clique_size[v] <= prune_low) {
+      /* Dealing with subset without heavy enough clique. */
+      break;
+    }
+    if (current_weight+weight <= prune_low) {
+      /* Even if all elements are added, won't do. */
+      break;
+    }
 
-		/* Very ugly code, but works faster than "for (i=...)" */
-		p1 = newtable;
-		newweight = 0;
-		for (p2=table; p2 < table+i; p2++) {
-			w = *p2;
-			if (GRAPH_IS_EDGE(g, v, w)) { // TODO
-				*p1 = w;
-				newweight += g->weights[w];
-				p1++;
-			}
-		}
+    /* Very ugly code, but works faster than "for (i=...)" */
+    p1 = newtable;
+    newweight = 0;
+    for (p2=table; p2 < table+i; p2++) {
+      w = *p2;
+      if (GRAPH_IS_EDGE(g, v, w)) { // TODO
+        *p1 = w;
+        newweight += g->weights[w];
+        p1++;
+      }
+    }
 
-		w=g->weights[v];
-		weight-=w;
-		/* Avoid a few unneccessary loops */
-		if (current_weight+w+newweight <= prune_low) {
-			continue;
-		}
+    w=g->weights[v];
+    weight-=w;
+    /* Avoid a few unneccessary loops */
+    if (current_weight+w+newweight <= prune_low) {
+      continue;
+    }
 
-		SET_ADD_ELEMENT(current_clique,v);
-		prune_low=sub_weighted_all(newtable,p1-newtable,
-					   newweight,
-					   current_weight+w,
-					   prune_low,prune_high,
-					   min_weight,max_weight,maximal,
-					   g,opts);
-		SET_DEL_ELEMENT(current_clique,v);
-		if ((prune_low<0) || (prune_low>=prune_high)) {
-			/* Impossible to find larger clique. */
-			break;
-		}
-	}
-	temp_list[temp_count++]=newtable;
-	return prune_low;
+    SET_ADD_ELEMENT(current_clique,v);
+    prune_low=sub_weighted_all(newtable,p1-newtable,
+             newweight,
+             current_weight+w,
+             prune_low,prune_high,
+             min_weight,max_weight,maximal,
+             g,opts);
+    SET_DEL_ELEMENT(current_clique,v);
+    if ((prune_low<0) || (prune_low>=prune_high)) {
+      /* Impossible to find larger clique. */
+      break;
+    }
+  }
+  temp_list[temp_count++]=newtable;
+  return prune_low;
 }
 
 
@@ -903,35 +903,35 @@ static int sub_weighted_all(int *table, int size, int weight,
  */
 static boolean store_clique(set_t clique, graph_t *g, clique_options *opts) {
 
-	clique_list_count++;
+  clique_list_count++;
 
-	/* clique_list[] */
-	if (opts->clique_list) {
-		/*
-		 * This has been a major source of bugs:
-		 * Has clique_list_count been set to 0 before calling
-		 * the recursions? 
-		 */
-		if (clique_list_count <= 0) {
-			fprintf(stderr,"CLIQUER INTERNAL ERROR: "
-				"clique_list_count has negative value!\n");
-			fprintf(stderr,"Please report as a bug.\n");
-			abort();
-		}
-		if (clique_list_count <= opts->clique_list_length)
-			opts->clique_list[clique_list_count-1] =
-				set_duplicate(clique);
-	}
+  /* clique_list[] */
+  if (opts->clique_list) {
+    /*
+     * This has been a major source of bugs:
+     * Has clique_list_count been set to 0 before calling
+     * the recursions? 
+     */
+    if (clique_list_count <= 0) {
+      fprintf(stderr,"CLIQUER INTERNAL ERROR: "
+        "clique_list_count has negative value!\n");
+      fprintf(stderr,"Please report as a bug.\n");
+      abort();
+    }
+    if (clique_list_count <= opts->clique_list_length)
+      opts->clique_list[clique_list_count-1] =
+        set_duplicate(clique);
+  }
 
-	/* user_function() */
-	if (opts->user_function) {
-		if (!opts->user_function(clique,g,opts)) {
-			/* User function requested abort. */
-			return FALSE;
-		}
-	}
+  /* user_function() */
+  if (opts->user_function) {
+    if (!opts->user_function(clique,g,opts)) {
+      /* User function requested abort. */
+      return FALSE;
+    }
+  }
 
-	return TRUE;
+  return TRUE;
 }
 
 /*
@@ -947,22 +947,22 @@ static boolean store_clique(set_t clique, graph_t *g, clique_options *opts) {
  *       at maximum once per clique_xxx() call, so it shouldn't matter.
  */
 static void maximalize_clique(set_t s,graph_t *g) {
-	int i,j;
-	boolean add;
+  int i,j;
+  boolean add;
 
-	for (i=0; i < g->n; i++) {
-		add=TRUE;
-		for (j=0; j < g->n; j++) {
-			if (SET_CONTAINS_FAST(s,j) && !GRAPH_IS_EDGE(g,i,j)) {
-				add=FALSE;
-				break;
-			}
-		}
-		if (add) {
-			SET_ADD_ELEMENT(s,i);
-		}
-	}
-	return;
+  for (i=0; i < g->n; i++) {
+    add=TRUE;
+    for (j=0; j < g->n; j++) {
+      if (SET_CONTAINS_FAST(s,j) && !GRAPH_IS_EDGE(g,i,j)) {
+        add=FALSE;
+        break;
+      }
+    }
+    if (add) {
+      SET_ADD_ELEMENT(s,i);
+    }
+  }
+  return;
 }
 
 
@@ -977,38 +977,38 @@ static void maximalize_clique(set_t s,graph_t *g) {
  * Returns TRUE is clique is a maximal clique of g, otherwise FALSE.
  */
 static boolean is_maximal(set_t clique, graph_t *g) {
-	int i,j;
-	int *table;
-	int len;
-	boolean addable;
+  int i,j;
+  int *table;
+  int len;
+  boolean addable;
 
-	if (temp_count) {
-		temp_count--;
-		table=temp_list[temp_count];
-	} else {
-		table=malloc(g->n * sizeof(int));
-	}
+  if (temp_count) {
+    temp_count--;
+    table=temp_list[temp_count];
+  } else {
+    table=malloc(g->n * sizeof(int));
+  }
 
-	len=0;
-	for (i=0; i < g->n; i++)
-		if (SET_CONTAINS_FAST(clique,i))
-			table[len++]=i;
+  len=0;
+  for (i=0; i < g->n; i++)
+    if (SET_CONTAINS_FAST(clique,i))
+      table[len++]=i;
 
-	for (i=0; i < g->n; i++) {
-		addable=TRUE;
-		for (j=0; j<len; j++) {
-			if (!GRAPH_IS_EDGE(g,i,table[j])) {
-				addable=FALSE;
-				break;
-			}
-		}
-		if (addable) {
-			temp_list[temp_count++]=table;
-			return FALSE;
-		}
-	}
-	temp_list[temp_count++]=table;
-	return TRUE;
+  for (i=0; i < g->n; i++) {
+    addable=TRUE;
+    for (j=0; j<len; j++) {
+      if (!GRAPH_IS_EDGE(g,i,table[j])) {
+        addable=FALSE;
+        break;
+      }
+    }
+    if (addable) {
+      temp_list[temp_count++]=table;
+      return FALSE;
+    }
+  }
+  temp_list[temp_count++]=table;
+  return TRUE;
 }
 
 
@@ -1018,7 +1018,7 @@ static boolean is_maximal(set_t clique, graph_t *g) {
  * Returns FALSE.  Can be used as user_function.
  */
 static boolean false_function(set_t clique,graph_t *g,clique_options *opts) {
-	return FALSE;
+  return FALSE;
 }
 
 
@@ -1040,20 +1040,20 @@ static boolean false_function(set_t clique,graph_t *g,clique_options *opts) {
  *       This incurs only very small overhead.
  */
 int clique_unweighted_max_weight(graph_t *g, clique_options *opts) {
-	set_t s;
-	int size;
+  set_t s;
+  int size;
 
-	ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
-	ASSERT(g!=NULL);
+  ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
+  ASSERT(g!=NULL);
 
-	s=clique_unweighted_find_single(g,0,0,FALSE,opts);
-	if (s==NULL) {
-		/* Search was aborted. */
-		return 0;
-	}
-	size=set_size(s);
-	set_free(s);
-	return size;
+  s=clique_unweighted_find_single(g,0,0,FALSE,opts);
+  if (s==NULL) {
+    /* Search was aborted. */
+    return 0;
+  }
+  size=set_size(s);
+  set_free(s);
+  return size;
 }
 
 
@@ -1079,104 +1079,104 @@ int clique_unweighted_max_weight(graph_t *g, clique_options *opts) {
  * Note: Does NOT use opts->user_function() or opts->clique_list[].
  */
 set_t clique_unweighted_find_single(graph_t *g,int min_size,int max_size,
-				    boolean maximal, clique_options *opts) {
-	int i;
-	int *table;
-	set_t s;
+            boolean maximal, clique_options *opts) {
+  int i;
+  int *table;
+  set_t s;
 
-	ENTRANCE_SAVE();
-	entrance_level++;
+  ENTRANCE_SAVE();
+  entrance_level++;
 
-	if (opts==NULL)
-		opts=clique_default_options;
+  if (opts==NULL)
+    opts=clique_default_options;
 
-	ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
-	ASSERT(g!=NULL);
-	ASSERT(min_size>=0);
-	ASSERT(max_size>=0);
-	ASSERT((max_size==0) || (min_size <= max_size));
-	ASSERT(!((min_size==0) && (max_size>0)));
-	ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
+  ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
+  ASSERT(g!=NULL);
+  ASSERT(min_size>=0);
+  ASSERT(max_size>=0);
+  ASSERT((max_size==0) || (min_size <= max_size));
+  ASSERT(!((min_size==0) && (max_size>0)));
+  ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
 
-	if ((max_size>0) && (min_size>max_size)) {
-		/* state was not changed */
-		entrance_level--;
-		return NULL;
-	}
+  if ((max_size>0) && (min_size>max_size)) {
+    /* state was not changed */
+    entrance_level--;
+    return NULL;
+  }
 
-	if (clocks_per_sec==0)
-		clocks_per_sec=sysconf(_SC_CLK_TCK);
-	ASSERT(clocks_per_sec>0);
+  if (clocks_per_sec==0)
+    clocks_per_sec=sysconf(_SC_CLK_TCK);
+  ASSERT(clocks_per_sec>0);
 
-	/* Dynamic allocation */
-	current_clique=set_new(g->n);
-	clique_size=malloc(g->n * sizeof(int));
-	/* table allocated later */
-	temp_list=malloc((g->n+2)*sizeof(int *));
-	temp_count=0;
+  /* Dynamic allocation */
+  current_clique=set_new(g->n);
+  clique_size=malloc(g->n * sizeof(int));
+  /* table allocated later */
+  temp_list=malloc((g->n+2)*sizeof(int *));
+  temp_count=0;
 
-	/* "start clock" */
-	gettimeofday(&realtimer,NULL);
-	times(&cputimer);
+  /* "start clock" */
+  gettimeofday(&realtimer,NULL);
+  times(&cputimer);
 
-	/* reorder */
-	if (opts->reorder_function) {
-		table=opts->reorder_function(g,FALSE);
-	} else if (opts->reorder_map) {
-		table=reorder_duplicate(opts->reorder_map,g->n);
-	} else {
-		table=reorder_ident(g->n);
-	}
-	ASSERT(reorder_is_bijection(table,g->n));
+  /* reorder */
+  if (opts->reorder_function) {
+    table=opts->reorder_function(g,FALSE);
+  } else if (opts->reorder_map) {
+    table=reorder_duplicate(opts->reorder_map,g->n);
+  } else {
+    table=reorder_ident(g->n);
+  }
+  ASSERT(reorder_is_bijection(table,g->n));
 
 
-	if (unweighted_clique_search_single(table,min_size,g,opts)==0) {
-		set_free(current_clique);
-		current_clique=NULL;
-		goto cleanreturn;
-	}
-	if (maximal && (min_size>0)) {
-		maximalize_clique(current_clique,g);
+  if (unweighted_clique_search_single(table,min_size,g,opts)==0) {
+    set_free(current_clique);
+    current_clique=NULL;
+    goto cleanreturn;
+  }
+  if (maximal && (min_size>0)) {
+    maximalize_clique(current_clique,g);
 
-		if ((max_size > 0) && (set_size(current_clique) > max_size)) {
-			clique_options localopts;
+    if ((max_size > 0) && (set_size(current_clique) > max_size)) {
+      clique_options localopts;
 
-			s = set_new(g->n);
-			localopts.time_function = opts->time_function;
-			localopts.output = opts->output;
-			localopts.user_function = false_function;
-			localopts.clique_list = &s;
-			localopts.clique_list_length = 1;
+      s = set_new(g->n);
+      localopts.time_function = opts->time_function;
+      localopts.output = opts->output;
+      localopts.user_function = false_function;
+      localopts.clique_list = &s;
+      localopts.clique_list_length = 1;
 
-			for (i=0; i < g->n-1; i++)
-				if (clique_size[table[i]]>=min_size)
-					break;
-			if (unweighted_clique_search_all(table,i,min_size,
-							 max_size,maximal,
-							 g,&localopts)) {
-				set_free(current_clique);
-				current_clique=s;
-			} else {
-				set_free(current_clique);
-				current_clique=NULL;
-			}
-		}
-	}
-	
+      for (i=0; i < g->n-1; i++)
+        if (clique_size[table[i]]>=min_size)
+          break;
+      if (unweighted_clique_search_all(table,i,min_size,
+               max_size,maximal,
+               g,&localopts)) {
+        set_free(current_clique);
+        current_clique=s;
+      } else {
+        set_free(current_clique);
+        current_clique=NULL;
+      }
+    }
+  }
+  
     cleanreturn:
-	s=current_clique;
+  s=current_clique;
 
-	/* Free resources */
-	for (i=0; i < temp_count; i++)
-		free(temp_list[i]);
-	free(temp_list);
-	free(table);
-	free(clique_size);
+  /* Free resources */
+  for (i=0; i < temp_count; i++)
+    free(temp_list[i]);
+  free(temp_list);
+  free(table);
+  free(clique_size);
 
-	ENTRANCE_RESTORE();
-	entrance_level--;
+  ENTRANCE_RESTORE();
+  entrance_level--;
 
-	return s;
+  return s;
 }
 
 
@@ -1203,95 +1203,95 @@ set_t clique_unweighted_find_single(graph_t *g,int min_size,int max_size,
  * by set_free().
  */
 int clique_unweighted_find_all(graph_t *g, int min_size, int max_size,
-			       boolean maximal, clique_options *opts) {
-	int i;
-	int *table;
-	int count;
+             boolean maximal, clique_options *opts) {
+  int i;
+  int *table;
+  int count;
 
-	ENTRANCE_SAVE();
-	entrance_level++;
+  ENTRANCE_SAVE();
+  entrance_level++;
 
-	if (opts==NULL)
-		opts=clique_default_options;
+  if (opts==NULL)
+    opts=clique_default_options;
 
-	ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
-	ASSERT(g!=NULL);
-	ASSERT(min_size>=0);
-	ASSERT(max_size>=0);
-	ASSERT((max_size==0) || (min_size <= max_size));
-	ASSERT(!((min_size==0) && (max_size>0)));
-	ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
+  ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
+  ASSERT(g!=NULL);
+  ASSERT(min_size>=0);
+  ASSERT(max_size>=0);
+  ASSERT((max_size==0) || (min_size <= max_size));
+  ASSERT(!((min_size==0) && (max_size>0)));
+  ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
 
-	if ((max_size>0) && (min_size>max_size)) {
-		/* state was not changed */
-		entrance_level--;
-		return 0;
-	}
+  if ((max_size>0) && (min_size>max_size)) {
+    /* state was not changed */
+    entrance_level--;
+    return 0;
+  }
 
-	if (clocks_per_sec==0)
-		clocks_per_sec=sysconf(_SC_CLK_TCK);
-	ASSERT(clocks_per_sec>0);
+  if (clocks_per_sec==0)
+    clocks_per_sec=sysconf(_SC_CLK_TCK);
+  ASSERT(clocks_per_sec>0);
 
-	/* Dynamic allocation */
-	current_clique=set_new(g->n);
-	clique_size=malloc(g->n * sizeof(int));
-	/* table allocated later */
-	temp_list=malloc((g->n+2)*sizeof(int *));
-	temp_count=0;
+  /* Dynamic allocation */
+  current_clique=set_new(g->n);
+  clique_size=malloc(g->n * sizeof(int));
+  /* table allocated later */
+  temp_list=malloc((g->n+2)*sizeof(int *));
+  temp_count=0;
 
-	clique_list_count=0;
-	memset(clique_size,0,g->n * sizeof(int));
+  clique_list_count=0;
+  memset(clique_size,0,g->n * sizeof(int));
 
-	/* "start clock" */
-	gettimeofday(&realtimer,NULL);
-	times(&cputimer);
+  /* "start clock" */
+  gettimeofday(&realtimer,NULL);
+  times(&cputimer);
 
-	/* reorder */
-	if (opts->reorder_function) {
-		table=opts->reorder_function(g,FALSE);
-	} else if (opts->reorder_map) {
-		table=reorder_duplicate(opts->reorder_map,g->n);
-	} else {
-		table=reorder_ident(g->n);
-	}
-	ASSERT(reorder_is_bijection(table,g->n));
+  /* reorder */
+  if (opts->reorder_function) {
+    table=opts->reorder_function(g,FALSE);
+  } else if (opts->reorder_map) {
+    table=reorder_duplicate(opts->reorder_map,g->n);
+  } else {
+    table=reorder_ident(g->n);
+  }
+  ASSERT(reorder_is_bijection(table,g->n));
 
 
-	/* Search as normal until there is a chance to find a suitable
-	 * clique. */
-	if (unweighted_clique_search_single(table,min_size,g,opts)==0) {
-		count=0;
-		goto cleanreturn;
-	}
+  /* Search as normal until there is a chance to find a suitable
+   * clique. */
+  if (unweighted_clique_search_single(table,min_size,g,opts)==0) {
+    count=0;
+    goto cleanreturn;
+  }
 
-	if (min_size==0 && max_size==0) {
-		min_size=max_size=clique_size[table[g->n-1]];
-		maximal=FALSE;  /* No need to test, since we're searching
-				 * for maximum cliques. */
-	}
-	if (max_size==0) {
-		max_size=INT_MAX;
-	}
+  if (min_size==0 && max_size==0) {
+    min_size=max_size=clique_size[table[g->n-1]];
+    maximal=FALSE;  /* No need to test, since we're searching
+         * for maximum cliques. */
+  }
+  if (max_size==0) {
+    max_size=INT_MAX;
+  }
 
-	for (i=0; i < g->n-1; i++)
-		if (clique_size[table[i]] >= min_size)
-			break;
-	count=unweighted_clique_search_all(table,i,min_size,max_size,
-					   maximal,g,opts);
+  for (i=0; i < g->n-1; i++)
+    if (clique_size[table[i]] >= min_size)
+      break;
+  count=unweighted_clique_search_all(table,i,min_size,max_size,
+             maximal,g,opts);
 
   cleanreturn:
-	/* Free resources */
-	for (i=0; i<temp_count; i++)
-		free(temp_list[i]);
-	free(temp_list);
-	free(table);
-	free(clique_size);
-	set_free(current_clique);
+  /* Free resources */
+  for (i=0; i<temp_count; i++)
+    free(temp_list[i]);
+  free(temp_list);
+  free(table);
+  free(clique_size);
+  set_free(current_clique);
 
-	ENTRANCE_RESTORE();
-	entrance_level--;
+  ENTRANCE_RESTORE();
+  entrance_level--;
 
-	return count;
+  return count;
 }
 
 
@@ -1311,20 +1311,20 @@ int clique_unweighted_find_all(graph_t *g, int min_size, int max_size,
  *       This incurs only very small overhead.
  */
 int clique_max_weight(graph_t *g,clique_options *opts) {
-	set_t s;
-	int weight;
+  set_t s;
+  int weight;
 
-	ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
-	ASSERT(g!=NULL);
+  ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
+  ASSERT(g!=NULL);
 
-	s=clique_find_single(g,0,0,FALSE,opts);
-	if (s==NULL) {
-		/* Search was aborted. */
-		return 0;
-	}
-	weight=graph_subgraph_weight(g,s);
-	set_free(s);
-	return weight;
+  s=clique_find_single(g,0,0,FALSE,opts);
+  if (s==NULL) {
+    /* Search was aborted. */
+    return 0;
+  }
+  weight=graph_subgraph_weight(g,s);
+  set_free(s);
+  return weight;
 }
 
 
@@ -1353,133 +1353,133 @@ int clique_max_weight(graph_t *g,clique_options *opts) {
  *       weights are the same.
  */
 set_t clique_find_single(graph_t *g,int min_weight,int max_weight,
-			 boolean maximal, clique_options *opts) {
-	int i;
-	int *table;
-	set_t s;
+       boolean maximal, clique_options *opts) {
+  int i;
+  int *table;
+  set_t s;
 
-	ENTRANCE_SAVE();
-	entrance_level++;
+  ENTRANCE_SAVE();
+  entrance_level++;
 
-	if (opts==NULL)
-		opts=clique_default_options;
+  if (opts==NULL)
+    opts=clique_default_options;
 
-	ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
-	ASSERT(g!=NULL);
-	ASSERT(min_weight>=0);
-	ASSERT(max_weight>=0);
-	ASSERT((max_weight==0) || (min_weight <= max_weight));
-	ASSERT(!((min_weight==0) && (max_weight>0)));
-	ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
+  ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
+  ASSERT(g!=NULL);
+  ASSERT(min_weight>=0);
+  ASSERT(max_weight>=0);
+  ASSERT((max_weight==0) || (min_weight <= max_weight));
+  ASSERT(!((min_weight==0) && (max_weight>0)));
+  ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
 
-	if ((max_weight>0) && (min_weight>max_weight)) {
-		/* state was not changed */
-		entrance_level--;
-		return NULL;
-	}
+  if ((max_weight>0) && (min_weight>max_weight)) {
+    /* state was not changed */
+    entrance_level--;
+    return NULL;
+  }
 
-	if (clocks_per_sec==0)
-		clocks_per_sec=sysconf(_SC_CLK_TCK);
-	ASSERT(clocks_per_sec>0);
+  if (clocks_per_sec==0)
+    clocks_per_sec=sysconf(_SC_CLK_TCK);
+  ASSERT(clocks_per_sec>0);
 
-	/* Check whether we can use unweighted routines. */
-	if (!graph_weighted(g)) {
-		min_weight=DIV_UP(min_weight,g->weights[0]);
-		if (max_weight) {
-			max_weight=DIV_DOWN(max_weight,g->weights[0]);
-			if (max_weight < min_weight) {
-				/* state was not changed */
-				entrance_level--;
-				return NULL;
-			}
-		}
+  /* Check whether we can use unweighted routines. */
+  if (!graph_weighted(g)) {
+    min_weight=DIV_UP(min_weight,g->weights[0]);
+    if (max_weight) {
+      max_weight=DIV_DOWN(max_weight,g->weights[0]);
+      if (max_weight < min_weight) {
+        /* state was not changed */
+        entrance_level--;
+        return NULL;
+      }
+    }
 
-		weight_multiplier = g->weights[0];
-		entrance_level--;
-		s=clique_unweighted_find_single(g,min_weight,max_weight,
-						maximal,opts);
-		ENTRANCE_RESTORE();
-		return s;
-	}
+    weight_multiplier = g->weights[0];
+    entrance_level--;
+    s=clique_unweighted_find_single(g,min_weight,max_weight,
+            maximal,opts);
+    ENTRANCE_RESTORE();
+    return s;
+  }
 
-	/* Dynamic allocation */
-	current_clique=set_new(g->n);
-	best_clique=set_new(g->n);
-	clique_size=malloc(g->n * sizeof(int));
-	memset(clique_size, 0, g->n * sizeof(int));
-	/* table allocated later */
-	temp_list=malloc((g->n+2)*sizeof(int *));
-	temp_count=0;
+  /* Dynamic allocation */
+  current_clique=set_new(g->n);
+  best_clique=set_new(g->n);
+  clique_size=malloc(g->n * sizeof(int));
+  memset(clique_size, 0, g->n * sizeof(int));
+  /* table allocated later */
+  temp_list=malloc((g->n+2)*sizeof(int *));
+  temp_count=0;
 
-	clique_list_count=0;
+  clique_list_count=0;
 
-	/* "start clock" */
-	gettimeofday(&realtimer,NULL);
-	times(&cputimer);
+  /* "start clock" */
+  gettimeofday(&realtimer,NULL);
+  times(&cputimer);
 
-	/* reorder */
-	if (opts->reorder_function) {
-		table=opts->reorder_function(g,TRUE);
-	} else if (opts->reorder_map) {
-		table=reorder_duplicate(opts->reorder_map,g->n);
-	} else {
-		table=reorder_ident(g->n);
-	}
-	ASSERT(reorder_is_bijection(table,g->n));
+  /* reorder */
+  if (opts->reorder_function) {
+    table=opts->reorder_function(g,TRUE);
+  } else if (opts->reorder_map) {
+    table=reorder_duplicate(opts->reorder_map,g->n);
+  } else {
+    table=reorder_ident(g->n);
+  }
+  ASSERT(reorder_is_bijection(table,g->n));
 
-	if (max_weight==0)
-		max_weight=INT_MAX;
+  if (max_weight==0)
+    max_weight=INT_MAX;
 
-	if (weighted_clique_search_single(table,min_weight,max_weight,
-					  g,opts)==0) {
-		/* Requested clique has not been found. */
-		set_free(best_clique);
-		best_clique=NULL;
-		goto cleanreturn;
-	}
-	if (maximal && (min_weight>0)) {
-		maximalize_clique(best_clique,g);
-		if (graph_subgraph_weight(g,best_clique) > max_weight) {
-			clique_options localopts;
+  if (weighted_clique_search_single(table,min_weight,max_weight,
+            g,opts)==0) {
+    /* Requested clique has not been found. */
+    set_free(best_clique);
+    best_clique=NULL;
+    goto cleanreturn;
+  }
+  if (maximal && (min_weight>0)) {
+    maximalize_clique(best_clique,g);
+    if (graph_subgraph_weight(g,best_clique) > max_weight) {
+      clique_options localopts;
 
-			localopts.time_function = opts->time_function;
-			localopts.output = opts->output;
-			localopts.user_function = false_function;
-			localopts.clique_list = &best_clique;
-			localopts.clique_list_length = 1;
+      localopts.time_function = opts->time_function;
+      localopts.output = opts->output;
+      localopts.user_function = false_function;
+      localopts.clique_list = &best_clique;
+      localopts.clique_list_length = 1;
 
-			for (i=0; i < g->n-1; i++)
-				if ((clique_size[table[i]] >= min_weight) ||
-				    (clique_size[table[i]] == 0))
-					break;
-			if (!weighted_clique_search_all(table,i,min_weight,
-							max_weight,maximal,
-							g,&localopts)) {
-				set_free(best_clique);
-				best_clique=NULL;
-			}
-		}
-	}
+      for (i=0; i < g->n-1; i++)
+        if ((clique_size[table[i]] >= min_weight) ||
+            (clique_size[table[i]] == 0))
+          break;
+      if (!weighted_clique_search_all(table,i,min_weight,
+              max_weight,maximal,
+              g,&localopts)) {
+        set_free(best_clique);
+        best_clique=NULL;
+      }
+    }
+  }
 
  cleanreturn:
-	s=best_clique;
+  s=best_clique;
 
-	/* Free resources */
-	for (i=0; i < temp_count; i++)
-		free(temp_list[i]);
-	free(temp_list);
-	temp_list=NULL;
-	temp_count=0;
-	free(table);
-	set_free(current_clique);
-	current_clique=NULL;
-	free(clique_size);
-	clique_size=NULL;
+  /* Free resources */
+  for (i=0; i < temp_count; i++)
+    free(temp_list[i]);
+  free(temp_list);
+  temp_list=NULL;
+  temp_count=0;
+  free(table);
+  set_free(current_clique);
+  current_clique=NULL;
+  free(clique_size);
+  clique_size=NULL;
 
-	ENTRANCE_RESTORE();
-	entrance_level--;
+  ENTRANCE_RESTORE();
+  entrance_level--;
 
-	return s;
+  return s;
 }
 
 
@@ -1513,114 +1513,114 @@ set_t clique_find_single(graph_t *g,int min_weight,int max_weight,
  *       weights are the same.
  */
 int clique_find_all(graph_t *g, int min_weight, int max_weight,
-		    boolean maximal, clique_options *opts) {
-	int i,n;
-	int *table;
+        boolean maximal, clique_options *opts) {
+  int i,n;
+  int *table;
 
-	ENTRANCE_SAVE();
-	entrance_level++;
+  ENTRANCE_SAVE();
+  entrance_level++;
 
-	if (opts==NULL)
-		opts=clique_default_options;
+  if (opts==NULL)
+    opts=clique_default_options;
 
-	ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
-	ASSERT(g!=NULL);
-	ASSERT(min_weight>=0);
-	ASSERT(max_weight>=0);
-	ASSERT((max_weight==0) || (min_weight <= max_weight));
-	ASSERT(!((min_weight==0) && (max_weight>0)));
-	ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
+  ASSERT((sizeof(setelement)*8)==ELEMENTSIZE);
+  ASSERT(g!=NULL);
+  ASSERT(min_weight>=0);
+  ASSERT(max_weight>=0);
+  ASSERT((max_weight==0) || (min_weight <= max_weight));
+  ASSERT(!((min_weight==0) && (max_weight>0)));
+  ASSERT((opts->reorder_function==NULL) || (opts->reorder_map==NULL));
 
-	if ((max_weight>0) && (min_weight>max_weight)) {
-		/* state was not changed */
-		entrance_level--;
-		return 0;
-	}
+  if ((max_weight>0) && (min_weight>max_weight)) {
+    /* state was not changed */
+    entrance_level--;
+    return 0;
+  }
 
-	if (clocks_per_sec==0)
-		clocks_per_sec=sysconf(_SC_CLK_TCK);
-	ASSERT(clocks_per_sec>0);
+  if (clocks_per_sec==0)
+    clocks_per_sec=sysconf(_SC_CLK_TCK);
+  ASSERT(clocks_per_sec>0);
 
-	if (!graph_weighted(g)) {
-		min_weight=DIV_UP(min_weight,g->weights[0]);
-		if (max_weight) {
-			max_weight=DIV_DOWN(max_weight,g->weights[0]);
-			if (max_weight < min_weight) {
-				/* state was not changed */
-				entrance_level--;
-				return 0;
-			}
-		}
-		
-		weight_multiplier = g->weights[0];
-		entrance_level--;
-		i=clique_unweighted_find_all(g,min_weight,max_weight,maximal,
-					     opts);
-		ENTRANCE_RESTORE();
-		return i;
-	}
+  if (!graph_weighted(g)) {
+    min_weight=DIV_UP(min_weight,g->weights[0]);
+    if (max_weight) {
+      max_weight=DIV_DOWN(max_weight,g->weights[0]);
+      if (max_weight < min_weight) {
+        /* state was not changed */
+        entrance_level--;
+        return 0;
+      }
+    }
+    
+    weight_multiplier = g->weights[0];
+    entrance_level--;
+    i=clique_unweighted_find_all(g,min_weight,max_weight,maximal,
+               opts);
+    ENTRANCE_RESTORE();
+    return i;
+  }
 
-	/* Dynamic allocation */
-	current_clique=set_new(g->n);
-	best_clique=set_new(g->n);
-	clique_size=malloc(g->n * sizeof(int));
-	memset(clique_size, 0, g->n * sizeof(int));
-	/* table allocated later */
-	temp_list=malloc((g->n+2)*sizeof(int *));
-	temp_count=0;
+  /* Dynamic allocation */
+  current_clique=set_new(g->n);
+  best_clique=set_new(g->n);
+  clique_size=malloc(g->n * sizeof(int));
+  memset(clique_size, 0, g->n * sizeof(int));
+  /* table allocated later */
+  temp_list=malloc((g->n+2)*sizeof(int *));
+  temp_count=0;
 
-	/* "start clock" */
-	gettimeofday(&realtimer,NULL);
-	times(&cputimer);
+  /* "start clock" */
+  gettimeofday(&realtimer,NULL);
+  times(&cputimer);
 
-	/* reorder */
-	if (opts->reorder_function) {
-		table=opts->reorder_function(g,TRUE);
-	} else if (opts->reorder_map) {
-		table=reorder_duplicate(opts->reorder_map,g->n);
-	} else {
-		table=reorder_ident(g->n);
-	}
-	ASSERT(reorder_is_bijection(table,g->n));
+  /* reorder */
+  if (opts->reorder_function) {
+    table=opts->reorder_function(g,TRUE);
+  } else if (opts->reorder_map) {
+    table=reorder_duplicate(opts->reorder_map,g->n);
+  } else {
+    table=reorder_ident(g->n);
+  }
+  ASSERT(reorder_is_bijection(table,g->n));
 
-	/* First phase */
-	n=weighted_clique_search_single(table,min_weight,INT_MAX,g,opts);
-	if (n==0) {
-		/* Requested clique has not been found. */
-		goto cleanreturn;
-	}
+  /* First phase */
+  n=weighted_clique_search_single(table,min_weight,INT_MAX,g,opts);
+  if (n==0) {
+    /* Requested clique has not been found. */
+    goto cleanreturn;
+  }
 
-	if (min_weight==0) {
-		min_weight=n;
-		max_weight=n;
-		maximal=FALSE;  /* They're maximum cliques already. */
-	}
-	if (max_weight==0)
-		max_weight=INT_MAX;
+  if (min_weight==0) {
+    min_weight=n;
+    max_weight=n;
+    maximal=FALSE;  /* They're maximum cliques already. */
+  }
+  if (max_weight==0)
+    max_weight=INT_MAX;
 
-	for (i=0; i < g->n; i++)
-		if ((clique_size[table[i]] >= min_weight) ||
-		    (clique_size[table[i]] == 0))
-			break;
+  for (i=0; i < g->n; i++)
+    if ((clique_size[table[i]] >= min_weight) ||
+        (clique_size[table[i]] == 0))
+      break;
 
-	/* Second phase */
-	n=weighted_clique_search_all(table,i,min_weight,max_weight,maximal,
-				     g,opts);
+  /* Second phase */
+  n=weighted_clique_search_all(table,i,min_weight,max_weight,maximal,
+             g,opts);
 
       cleanreturn:
-	/* Free resources */
-	for (i=0; i < temp_count; i++)
-		free(temp_list[i]);
-	free(temp_list);
-	free(table);
-	set_free(current_clique);
-	set_free(best_clique);
-	free(clique_size);
+  /* Free resources */
+  for (i=0; i < temp_count; i++)
+    free(temp_list[i]);
+  free(temp_list);
+  free(table);
+  set_free(current_clique);
+  set_free(best_clique);
+  free(clique_size);
 
-	ENTRANCE_RESTORE();
-	entrance_level--;
+  ENTRANCE_RESTORE();
+  entrance_level--;
 
-	return n;
+  return n;
 }
 
 
@@ -1656,37 +1656,37 @@ int clique_find_all(graph_t *g, int min_weight, int max_weight,
  * Returns always TRUE  (ie. never requests abort).
  */
 boolean clique_print_time(int level, int i, int n, int max,
-			  double cputime, double realtime,
-			  clique_options *opts) {
-	static float prev_time=100;
-	static int prev_i=100;
-	static int prev_max=100;
-	static int prev_level=0;
-	FILE *fp=opts->output;
-	int j;
+        double cputime, double realtime,
+        clique_options *opts) {
+  static float prev_time=100;
+  static int prev_i=100;
+  static int prev_max=100;
+  static int prev_level=0;
+  FILE *fp=opts->output;
+  int j;
 
-	if (fp==NULL)
-		fp=stdout;
+  if (fp==NULL)
+    fp=stdout;
 
-	if (ABS(prev_time-realtime)>0.1 || i==n || i<prev_i || max!=prev_max ||
-	    level!=prev_level) {
-		for (j=1; j<level; j++)
-			fprintf(fp,"  ");
-		if (realtime-prev_time < 0.01 || i<=prev_i)
-			fprintf(fp,"%3d/%d (max %2d)  %2.2f s  "
-				"(0.00 s/round)\n",i,n,max,
-				realtime);
-		else
-			fprintf(fp,"%3d/%d (max %2d)  %2.2f s  "
-				"(%2.2f s/round)\n",
-				i,n,max,realtime,
-				(realtime-prev_time)/(i-prev_i));
-		prev_time=realtime;
-		prev_i=i;
-		prev_max=max;
-		prev_level=level;
-	}
-	return TRUE;
+  if (ABS(prev_time-realtime)>0.1 || i==n || i<prev_i || max!=prev_max ||
+      level!=prev_level) {
+    for (j=1; j<level; j++)
+      fprintf(fp,"  ");
+    if (realtime-prev_time < 0.01 || i<=prev_i)
+      fprintf(fp,"%3d/%d (max %2d)  %2.2f s  "
+        "(0.00 s/round)\n",i,n,max,
+        realtime);
+    else
+      fprintf(fp,"%3d/%d (max %2d)  %2.2f s  "
+        "(%2.2f s/round)\n",
+        i,n,max,realtime,
+        (realtime-prev_time)/(i-prev_i));
+    prev_time=realtime;
+    prev_i=i;
+    prev_max=max;
+    prev_level=level;
+  }
+  return TRUE;
 }
 
 /*
@@ -1705,27 +1705,27 @@ boolean clique_print_time(int level, int i, int n, int max,
  * Returns always TRUE  (ie. never requests abort).
  */
 boolean clique_print_time_always(int level, int i, int n, int max,
-				 double cputime, double realtime,
-				 clique_options *opts) {
-	static float prev_time=100;
-	static int prev_i=100;
-	FILE *fp=opts->output;
-	int j;
+         double cputime, double realtime,
+         clique_options *opts) {
+  static float prev_time=100;
+  static int prev_i=100;
+  FILE *fp=opts->output;
+  int j;
 
-	if (fp==NULL)
-		fp=stdout;
+  if (fp==NULL)
+    fp=stdout;
 
-	for (j=1; j<level; j++)
-		fprintf(fp,"  ");
+  for (j=1; j<level; j++)
+    fprintf(fp,"  ");
 
-	if (realtime-prev_time < 0.01 || i<=prev_i)
-		fprintf(fp,"%3d/%d (max %2d)  %2.2f s  (0.00 s/round)\n",
-			i,n,max,realtime);
-	else
-		fprintf(fp,"%3d/%d (max %2d)  %2.2f s  (%2.2f s/round)\n",
-			i,n,max,realtime,(realtime-prev_time)/(i-prev_i));
-	prev_time=realtime;
-	prev_i=i;
+  if (realtime-prev_time < 0.01 || i<=prev_i)
+    fprintf(fp,"%3d/%d (max %2d)  %2.2f s  (0.00 s/round)\n",
+      i,n,max,realtime);
+  else
+    fprintf(fp,"%3d/%d (max %2d)  %2.2f s  (%2.2f s/round)\n",
+      i,n,max,realtime,(realtime-prev_time)/(i-prev_i));
+  prev_time=realtime;
+  prev_i=i;
 
-	return TRUE;
+  return TRUE;
 }
