@@ -151,15 +151,15 @@ void printhelp(char *prog) {
 	       "the graph.  Options are the following:\n"
 	       "\n"
 	       " -h    --help         This help text.\n"
-	       " -a    --all          Find all cliques.\n"
-	       " -s    --single       Find only one clique (default).\n"
+	       " -a    --all          Find all bicliques.\n"
+	       " -s    --single       Find only one biclique (default).\n"
 	       " -w    --weight       Tell only maximum weight (no faster than -s).\n"
-	       " -m N  --min N        Search for cliques with weight at least N.  If N=0,\n"
-	       "                      searches for maximum weight clique (default).\n"
-	       " -M N  --max N        Search for cliques with weight at most N.  If N=0,\n"
+	       " -m N  --min N        Search for bicliques with weight at least N.  If N=0,\n"
+	       "                      searches for maximum weight biclique (default).\n"
+	       " -M N  --max N        Search for bicliques with weight at most N.  If N=0,\n"
 	       "                      no limit is imposed (default).  N being positive is\n"
 	       "                      incompatible with \"--min 0\" (\"--min 1\" is assumed).\n"
-	       " -x    --maximal      Require cliques to be maximal.\n"
+	       " -x    --maximal      Require bicliques to be maximal.\n"
 	       " -u    --unweighted   Assume weight 1 for all vertices.\n"
 	       " -0    --from-0       Number vertices 0 to n-1 instead of 1 to n when writing.\n"
 	       " -r F  --reorder F    Reorder with function F.  See below for details.\n"
@@ -340,7 +340,7 @@ void read_options(int argc, char **argv) {
 void print_search(graph_t *g) {
 	fprintf(stderr,"Searching for %s ",find_all?"all":"a single");
 	if (min_weight==0) {
-		fprintf(stderr,"maximum %s clique%s...\n",
+		fprintf(stderr,"maximum %s biclique%s...\n",
 			unweighted?"size":"weight",find_all?"s":"");
 		return;
 	}

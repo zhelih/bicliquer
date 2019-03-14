@@ -38,6 +38,7 @@ static struct timeval realtimer; /* Timer for opts->time_function() */
 static int clique_list_count=0;  /* No. of cliques in opts->clique_list[] */
 static int weight_multiplier=1;  /* Weights multiplied by this when passing
 				  * to time_function(). */
+static int current_i; /* first vertex in P */
 
 /* List cache (contains memory blocks of size g->n * sizeof(int)) */
 static int **temp_list=NULL;
@@ -145,6 +146,8 @@ static int unweighted_clique_search_single(int *table, int min_size,
 	int *newtable;
 	int newsize;
 
+  printf("HERE!\n");
+
 	v=table[0];
 	clique_size[v]=1;
 	set_empty(current_clique);
@@ -161,13 +164,12 @@ static int unweighted_clique_search_single(int *table, int min_size,
 	for (i=1; i < g->n; i++) {
 		w=v;
 		v=table[i];
+    current_i = v;
 
 		newsize=0;
 		for (j=0; j<i; j++) {
-			if (GRAPH_IS_EDGE(g, v, table[j])) {
-				newtable[newsize]=table[j];
-				newsize++;
-			}
+		  newtable[newsize]=table[j];
+			newsize++;
 		}
 
 		if (sub_unweighted_single(newtable,newsize,clique_size[w],g)) {
@@ -277,7 +279,9 @@ static boolean sub_unweighted_single(int *table, int size, int min_size,
 		p1 = newtable;
 		for (p2=table; p2 < table+i; p2++) {
 			int w = *p2;
-			if (GRAPH_IS_EDGE(g, v, w)) {
+      if(v == w || v == current_i || w == current_i)
+        exit(0);
+			if (!(GRAPH_IS_EDGE(g, v, w) ^ GRAPH_IS_EDGE(g, v, current_i) ^ GRAPH_IS_EDGE(g, w, current_i))) {
 				*p1 = w;
 				p1++;
 			}
@@ -357,10 +361,8 @@ static int unweighted_clique_search_all(int *table, int start,
 
 		newsize=0;
 		for (j=0; j<i; j++) {
-			if (GRAPH_IS_EDGE(g,v,table[j])) {
-				newtable[newsize]=table[j];
-				newsize++;
-			}
+			newtable[newsize]=table[j];
+			newsize++;
 		}
 
 		SET_ADD_ELEMENT(current_clique,v);
@@ -471,7 +473,7 @@ static int sub_unweighted_all(int *table, int size, int min_size, int max_size,
 		p1 = newtable;
 		for (p2=table; p2 < table+i; p2++) {
 			int w = *p2;
-			if (GRAPH_IS_EDGE(g, v, w)) {
+			if (GRAPH_IS_EDGE(g, v, w)) { // TODO
 				*p1 = w;
 				p1++;
 			}
@@ -605,11 +607,9 @@ static int weighted_clique_search_single(int *table, int min_weight,
 		newsize=0;
 		newweight=0;
 		for (j=0; j<i; j++) {
-			if (GRAPH_IS_EDGE(g,v,table[j])) {
-				newweight += g->weights[table[j]];
-				newtable[newsize]=table[j];
-				newsize++;
-			}
+			newweight += g->weights[table[j]];
+			newtable[newsize]=table[j];
+			newsize++;
 		}
 
 
@@ -710,11 +710,9 @@ static int weighted_clique_search_all(int *table, int start,
 		newsize=0;
 		newweight=0;
 		for (j=0; j<i; j++) {
-			if (GRAPH_IS_EDGE(g,v,table[j])) {
-				newtable[newsize]=table[j];
-				newweight+=g->weights[table[j]];
-				newsize++;
-			}
+			newtable[newsize]=table[j];
+			newweight+=g->weights[table[j]];
+			newsize++;
 		}
 
 		SET_ADD_ELEMENT(current_clique,v);
@@ -855,7 +853,7 @@ static int sub_weighted_all(int *table, int size, int weight,
 		newweight = 0;
 		for (p2=table; p2 < table+i; p2++) {
 			w = *p2;
-			if (GRAPH_IS_EDGE(g, v, w)) {
+			if (GRAPH_IS_EDGE(g, v, w)) { // TODO
 				*p1 = w;
 				newweight += g->weights[w];
 				p1++;
